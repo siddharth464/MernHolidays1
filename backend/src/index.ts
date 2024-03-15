@@ -42,7 +42,7 @@ app.get("*", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
 });
 
-const PORT = process.env.PORT || 5174;
-app.listen(PORT, () => {
-  console.log(`server running on localhost:${PORT}`);
+const port = process.env.PORT || 5174;
+app.listen(port, () => {
+  console.log(`server running on localhost:${port}`);
 });
