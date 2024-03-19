@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from "react-hook-form";
 import {
   PaymentIntentResponse,
@@ -65,10 +66,13 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
     },
   });
 
+  const [isPaymentProcessing, setPaymentProcessing] = useState(false);
+
   const onSubmit = async (formData: BookingFormData) => {
     if (!stripe || !elements) {
       return;
     }
+    setPaymentProcessing(true);
 
     const result = await stripe.confirmCardPayment(paymentIntent.clientSecret, {
       payment_method: {
@@ -79,6 +83,7 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
     if (result.paymentIntent?.status === "succeeded") {
       bookRoom({ ...formData, paymentIntentId: result.paymentIntent.id });
     }
+    setPaymentProcessing(false);
   };
 
   return (
@@ -125,7 +130,7 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
 
         <div className="bg-blue-200 p-4 rounded-md">
           <div className="font-semibold text-lg">
-            Total Cost: £{paymentIntent.totalCost.toFixed(2)}
+            Total Cost: ${paymentIntent.totalCost.toFixed(2)}
           </div>
           <div className="text-xs">Includes taxes and charges</div>
         </div>
@@ -141,11 +146,11 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
 
       <div className="flex justify-end">
         <button
-          disabled={isLoading}
+          disabled={isLoading || isPaymentProcessing}
           type="submit"
           className="bg-blue-600 text-white p-2 font-bold hover:bg-blue-500 text-md disabled:bg-gray-500"
         >
-          {isLoading ? "Saving..." : "Confirm Booking"}
+          {isLoading || isPaymentProcessing ? "Saving..." : "Confirm Booking"}
         </button>
       </div>
     </form>
