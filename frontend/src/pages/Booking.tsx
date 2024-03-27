@@ -67,9 +67,6 @@ const Booking = () => {
       {currentUser && paymentIntentData && (
         <Elements
           stripe={stripePromise}
-          options={{
-            clientSecret: paymentIntentData.clientSecret,
-          }}
         >
           <BookingForm
             currentUser={currentUser}
