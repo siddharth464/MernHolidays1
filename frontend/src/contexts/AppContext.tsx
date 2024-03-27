@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Toast from "../components/Toast";
 import { useQuery } from "react-query";
 import * as apiClient from "../api-client";
@@ -20,14 +20,17 @@ type AppContext = {
 
 const AppContext = React.createContext<AppContext | undefined>(undefined);
 
-const stripePromise = loadStripe(STRIPE_PUB_KEY);
-
 export const AppContextProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
   const [toast, setToast] = useState<ToastMessage | undefined>(undefined);
+  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null>>(() => new Promise(() => {}));
+
+  useEffect(() => {
+    setStripePromise(loadStripe(STRIPE_PUB_KEY));
+  }, []);
 
   const { isError } = useQuery("validateToken", apiClient.validateToken, {
     retry: false,
